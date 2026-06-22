@@ -8,6 +8,7 @@
  */
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
 import { login as apiLogin, getToken, clearToken } from "./api"
+import { registerForPush, unregisterForPush } from "./push"
 
 interface AuthState {
   /** true once the launch-time token restore has finished. */
@@ -26,16 +27,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     getToken()
-      .then((t) => setSignedIn(!!t))
+      .then((t) => {
+        setSignedIn(!!t)
+        if (t) registerForPush() // returning member — refresh the device token (best-effort)
+      })
       .finally(() => setReady(true))
   }, [])
 
   async function signIn(email: string, password: string) {
     await apiLogin(email, password) // stores the token on success or throws
     setSignedIn(true)
+    registerForPush() // fire-and-forget — never blocks login
   }
 
   async function signOut() {
+    await unregisterForPush() // drop this device's token BEFORE clearing the JWT (DELETE needs the Bearer)
     await clearToken()
     setSignedIn(false)
   }

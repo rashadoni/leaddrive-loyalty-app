@@ -120,3 +120,22 @@ export async function redeemReward(rewardId: string): Promise<RedeemResult> {
   if (!r.ok) throw new ApiError(r.status, body?.error || "Redeem failed")
   return body as RedeemResult
 }
+
+/** Register this device's Expo push token so the loyalty earn hooks can notify it. */
+export async function registerPushToken(expoPushToken: string): Promise<void> {
+  const r = await fetch(`${API_BASE}/api/v1/public/portal-push-register`, {
+    method: "POST",
+    headers: { "content-type": "application/json", ...(await authHeaders()) },
+    body: JSON.stringify({ expoPushToken }),
+  })
+  if (!r.ok) throw new ApiError(r.status, "Push registration failed")
+}
+
+/** Unregister this device's token (call on sign-out). */
+export async function unregisterPushToken(expoPushToken: string): Promise<void> {
+  await fetch(`${API_BASE}/api/v1/public/portal-push-register`, {
+    method: "DELETE",
+    headers: { "content-type": "application/json", ...(await authHeaders()) },
+    body: JSON.stringify({ expoPushToken }),
+  }).catch(() => {})
+}
