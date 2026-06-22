@@ -63,7 +63,7 @@ export default function CardScreen() {
       {tier?.next && (
         <View style={styles.progressBox}>
           <Text style={styles.progressText}>
-            {tier.pointsToNext.toLocaleString()} pts to {tier.next.name}
+            {(tier.pointsToNext ?? 0).toLocaleString()} pts to {tier.next.name}
           </Text>
           <View style={styles.progressTrack}>
             <View style={[styles.progressFill, { width: `${Math.min(100, tier.progressPct)}%` }]} />

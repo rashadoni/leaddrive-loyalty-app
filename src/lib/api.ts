@@ -19,14 +19,15 @@ export interface LoyaltyTierInfo {
   minLifetimePoints: number
 }
 export interface LoyaltyData {
-  account: { points: number; lifetimePoints: number; tier: string | null }
+  account: { points: number; lifetimePoints: number; tier: string | null; tierName: string | null }
   tier: {
     current: LoyaltyTierInfo | null
     next: LoyaltyTierInfo | null
-    pointsToNext: number
+    /** null when there is no next tier (member is at the top). */
+    pointsToNext: number | null
     progressPct: number
   }
-  benefits: string[]
+  benefits?: string[]
   history: { type: string; delta: number; reason: string | null; createdAt: string }[]
   rewards: {
     id: string
@@ -76,10 +77,13 @@ export class ApiError extends Error {
  * so the app fails loud rather than silently "logging in" with no token.
  */
 export async function login(email: string, password: string): Promise<string> {
-  const r = await fetch(`${API_BASE}/api/v1/public/portal-login`, {
+  // Real route is /portal-auth (verified against the deployed backend). It sets
+  // the JWT as an httpOnly cookie today; Phase 0 makes it ALSO return the token
+  // in the body for native clients. Until then `body.token` is absent → we throw.
+  const r = await fetch(`${API_BASE}/api/v1/public/portal-auth`, {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ email, password, mode: "token" }),
+    body: JSON.stringify({ email, password }),
   })
   const body = await r.json().catch(() => ({}))
   if (!r.ok) throw new ApiError(r.status, body?.error || "Login failed")
