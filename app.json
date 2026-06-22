@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "leaddrive-loyalty-app",
+    "name": "LeadDrive Loyalty",
     "slug": "leaddrive-loyalty-app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -8,9 +8,12 @@
     "scheme": "leaddriveloyaltyapp",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/expo.icon",
+      "bundleIdentifier": "org.leaddrive.loyalty",
+      "supportsTablet": true
     },
     "android": {
+      "package": "org.leaddrive.loyalty",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -34,7 +37,8 @@
             "imageWidth": 76
           }
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true,
